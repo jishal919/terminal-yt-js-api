@@ -1,68 +1,53 @@
 const express = require('express');
 const puppeteer = require('puppeteer');
 const bodyParser = require('body-parser');
-require("dotenv").config();
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
 async function downloadYouTubeVideo(url) {
     const browser = await puppeteer.launch({
-        executablePath: 
-          process.env.NODE_ENV === "production" 
-            ? process.env.PUPPETEER_EXECUTABLE_PATH
-            : puppeteer.executablePath(),
         headless: "new",
         args: ['--disable-gpu', '--no-sandbox', '--disable-dev-shm-usage'],
     });
 
     try {
-      const page = await browser.newPage();
+        const page = await browser.newPage();
 
-      console.log('Started automation.');
+        console.log('Started automation.');
 
-      await page.goto('https://www.ytmp3.nu/');
+        await page.goto('https://www.ytmp3.nu/');
 
-      const inputSelector = 'input';
-      await page.waitForSelector(inputSelector);
-      const inputField = await page.$(inputSelector);
+        const inputSelector = 'input';
+        await page.waitForSelector(inputSelector);
+        const inputField = await page.$(inputSelector);
 
-      await inputField.type(url);
+        await inputField.type(url);
 
-      const convertButtonSelector = "//input[@value='Convert']";
-      await page.waitForXPath(convertButtonSelector);
-      const convertButton = await page.$x(convertButtonSelector);
-      await convertButton[0].click();
+        const convertButtonSelector = "//input[@value='Convert']";
+        await page.waitForXPath(convertButtonSelector);
+        const convertButton = await page.$x(convertButtonSelector);
+        await convertButton[0].click();
 
-      await page.waitForTimeout(5000);
+        await page.waitForTimeout(5000);
 
-      console.log('URL processing completed.');
+        console.log('URL processing completed.');
 
-      const buttons = await page.$$('a[rel="nofollow"]');
-      try {
-        if (buttons.length >= 2) {
-    
-            const secondButton = buttons[0];
-            const songURLProperty = await secondButton.getProperty('href');
-            const songURL = await songURLProperty.jsonValue();
-            console.log('Process completed without any error');
-            return songURL;
-        } else {
-            console.log('Less than 2 buttons available.');
-            console.log('Total button indices and their values:');
-            buttons.forEach(async (button, index) => {
-                const buttonValue = await button.getProperty('textContent');
-                const value = await buttonValue.jsonValue();
-                console.log(`Index: ${index}, Value: ${value}`);
-            });
-    
-            
+        const buttons = await page.$$('a[rel="nofollow"]');
+        try {
+            if (buttons.length >= 2) {
+                const secondButton = buttons[0];
+                const songURLProperty = await secondButton.getProperty('href');
+                const songURL = await songURLProperty.jsonValue();
+                console.log('Process completed without any error');
+                return songURL;
+            }
+        } catch (error) {
+            console.log(`Error during download: ${error}`);
         }
-    } catch (error) {
-        console.log(`Error during download: ${error}`);
+    } finally {
+        await browser.close();
     }
-  } finally {
-      await browser.close();
-  }
 }
 
 app.post('/send_req', async (req, res) => {
