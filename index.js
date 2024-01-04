@@ -1,14 +1,16 @@
 const express = require('express');
 const puppeteer = require('puppeteer');
-const bodyParser = require('body-parser');
+require("dotenv").config();
 const apiKey = 'ee76d10e-6aa3-41e1-8da3-5ffa69440ced'; // Replace with your Browserless.io API key
 
 const app = express();
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
 
 async function downloadYouTubeVideo(url) {
     const browser = await puppeteer.launch({
+        executablePath: 
+          process.env.NODE_ENV === "production" 
+            ? process.env.PUPPETEER_EXECUTABLE_PATH
+            : puppeteer.executablePath(),
         headless: "new",
         args: ['--disable-gpu', '--no-sandbox', '--disable-dev-shm-usage'],
     });
