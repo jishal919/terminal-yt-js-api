@@ -39,16 +39,33 @@ async function downloadYouTubeVideo(url) {
 
         const buttons = await page.$$('a[rel="nofollow"]');
         try {
-            if (buttons.length >= 2) {
-                const secondButton = buttons[1];
-                const songURLProperty = await secondButton.getProperty('href');
-                const songURL = await songURLProperty.jsonValue();
-                console.log('Process completed without any error');
-                return songURL;
-            }
-        } catch (error) {
-            console.log(`Error during download: ${error}`);
-        }
+          if (buttons.length >= 2) {
+              const secondButton = buttons[1];
+              const songURLProperty = await secondButton.getProperty('href');
+              const songURL = await songURLProperty.jsonValue();
+              console.log('Process completed without any error');
+              return songURL;
+          } else {
+              console.log('Less than 2 buttons available.');
+              console.log('Total button indices and their values:');
+              buttons.forEach(async (button, index) => {
+                  const buttonValue = await button.getProperty('textContent');
+                  const value = await buttonValue.jsonValue();
+                  console.log(`Index: ${index}, Value: ${value}`);
+              });
+      
+              if (buttons.length > 0) {
+                  console.log('Available values at indices 0, 1, and 2:');
+                  for (let i = 0; i < Math.min(buttons.length, 3); i++) {
+                      const buttonValue = await buttons[i].getProperty('textContent');
+                      const value = await buttonValue.jsonValue();
+                      console.log(`Index ${i}: ${value}`);
+                  }
+              }
+          }
+      } catch (error) {
+          console.log(`Error during download: ${error}`);
+      }
     } finally {
         await browser.close();
     }
