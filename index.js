@@ -8,7 +8,7 @@ app.use(bodyParser.json());
 async function downloadYouTubeVideo(url) {
     const browser = await puppeteer.launch({
         headless: "new",
-        args: ['--disable-gpu', '--no-sandbox', '--disable-dev-shm-usage'],
+        args: ["--disable-setuid-sandbox","--no-sandbox","--single-process","--no-zygote"],
     });
 
     try {
