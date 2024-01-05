@@ -16,25 +16,15 @@ async function downloadYouTubeVideo(url) {
 
         console.log('Started automation.');
 
-        await page.goto('https://www.ytmp3.nu/');
+        await page.goto('https://www.ytmp3.nu/', { waitUntil: 'domcontentloaded' });
 
-        // Execute JavaScript to set the input field value to the URL
-        await page.evaluate((url) => {
-            const input = document.querySelector('input');
-            input.focus();
-            input.value = url;
-            input.dispatchEvent(new Event('input', { bubbles: true }));
-          }, url);
-          
+        // Use the keyboard to focus and type the URL
+        await page.keyboard.type(url);
 
-        // Triggering Enter key press to initiate the conversion
-        await page.evaluate(() => {
-            const convertButton = document.evaluate("//input[@value='Convert']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-            convertButton.click();
-          });
-          
+        // Trigger the convert button by hitting "Enter"
+        await page.keyboard.press('Enter');
 
-        await page.waitForTimeout(5000);
+        await page.waitForTimeout(6000);
 
         console.log('URL processing completed.');
 
