@@ -14,23 +14,20 @@ async function downloadYouTubeVideo(url) {
     try {
         const page = await browser.newPage();
 
-        console.log('Getting the music URL');
+        console.log('Started automation.');
 
         await page.goto('https://www.ytmp3.nu/');
 
-        const inputSelector = 'input';
-        await page.waitForSelector(inputSelector);
-        const inputField = await page.$(inputSelector);
+        // Execute JavaScript to set the input field value to the URL
+        await page.evaluate((url) => {
+            const inputField = document.querySelector('input');
+            inputField.value = url;
+        }, url);
 
-        await inputField.type(url);
+        // Triggering Enter key press to initiate the conversion
+        await page.keyboard.press('Enter');
 
-        const convertButtonSelector = "//input[@value='Convert']";
-        await page.waitForXPath(convertButtonSelector);
-        const convertButton = await page.$x(convertButtonSelector);
-        await convertButton[0].click();
-        
         await page.waitForTimeout(5000);
-        
 
         console.log('URL processing completed.');
 
@@ -42,7 +39,7 @@ async function downloadYouTubeVideo(url) {
             console.log(`Index ${index}: ${value}`);
         });
         try {
-            if (buttons.length >= 2) {
+            if (true) {
                 const secondButton = buttonsafterinput[8];
 
                 const songURLProperty = await secondButton.getProperty('href');
