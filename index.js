@@ -20,12 +20,19 @@ async function downloadYouTubeVideo(url) {
 
         // Execute JavaScript to set the input field value to the URL
         await page.evaluate((url) => {
-            const inputField = document.querySelector('input');
-            inputField.value = url;
-        }, url);
+            const input = document.querySelector('input');
+            input.focus();
+            input.value = url;
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+          }, url);
+          
 
         // Triggering Enter key press to initiate the conversion
-        await page.keyboard.press('Enter');
+        await page.evaluate(() => {
+            const convertButton = document.evaluate("//input[@value='Convert']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+            convertButton.click();
+          });
+          
 
         await page.waitForTimeout(5000);
 
