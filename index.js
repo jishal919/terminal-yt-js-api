@@ -70,6 +70,10 @@ app.post('/send_req', async (req, res) => {
   }
 });
 
+app.get('/non_inactive', (req, res) => {
+  res.send('Thank you!');
+});
+
 const listener = app.listen(3000, '0.0.0.0', () => {
   console.log('API is listening on port 3000');
 });
