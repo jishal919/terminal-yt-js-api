@@ -28,17 +28,26 @@ async function downloadYouTubeVideo(url) {
         await page.waitForXPath(convertButtonSelector);
         const convertButton = await page.$x(convertButtonSelector);
         await convertButton[0].click();
-
+        
         await page.waitForTimeout(5000);
+        
 
         console.log('URL processing completed.');
 
         const buttons = await page.$$('a[rel="nofollow"]');
+        const buttonsafterinput = await page.$$('a'); // Selects all buttons on the page
+        buttonsafterinput.forEach(async (button, index) => {
+            const buttonValue = await button.getProperty('textContent');
+            const value = await buttonValue.jsonValue();
+            console.log(`Index ${index}: ${value}`);
+        });
         try {
             if (buttons.length >= 2) {
-                const secondButton = buttons[1];
+                const secondButton = buttonsafterinput[8];
+
                 const songURLProperty = await secondButton.getProperty('href');
                 const songURL = await songURLProperty.jsonValue();
+
                 return songURL;
             }
         } catch (error) {
