@@ -6,5 +6,11 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 RUN npm ci
-COPY . .
-CMD [ "node","index.js"]
+
+# Install chromium-browser
+RUN apt-get update && apt-get install -y chromium-browser
+
+# Copy the index.js file to the /usr/src/app directory
+COPY index.js .
+
+CMD [ "node", "server.js"]
