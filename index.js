@@ -15,12 +15,12 @@ async function downloadYouTubeVideo(url) {
         const page = await browser.newPage();
 
         console.log('Started automation.');
-
+        await page.waitForTimeout(3000);
         await page.goto('https://www.ytmp3.nu/', { waitUntil: 'domcontentloaded' });
-
+        await page.waitForTimeout(3000);
         // Use the keyboard to focus and type the URL
         await page.keyboard.type(url);
-
+        await page.waitForTimeout(4000);
         // Trigger the convert button by hitting "Enter"
         await page.keyboard.press('Enter');
 
