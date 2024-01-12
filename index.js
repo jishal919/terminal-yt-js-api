@@ -9,6 +9,10 @@ async function downloadYouTubeVideo(url) {
     const browser = await puppeteer.launch({
         headless: "new",
         args: ['--disable-gpu', '--no-sandbox', '--disable-dev-shm-usage'],
+        executablePath:
+            process.env.NODE_ENV === "production"
+                ? process.env.PUPPETEER_EXECUTABLE_PATH
+                : puppeteer.executablePath(),
     });
 
     try {
